@@ -49,8 +49,7 @@ int main(void)
     MAP_WDT_A_holdTimer();
     sysTimerInit();
     ADCInit();
-    
-    
+
     Timer32_initModule (TIMER32_0_BASE,TIMER32_PRESCALER_256,TIMER32_16BIT,TIMER32_PERIODIC_MODE);
     Timer32_setCount    (TIMER32_0_BASE, 20000);
     Timer32_enableInterrupt(TIMER32_0_BASE);
@@ -71,8 +70,8 @@ void ADC14_IRQHandler(void)
     }
 }
 
-
 void timer32IntHandler(void){
+
     Timer32_clearInterruptFlag(TIMER32_0_BASE);
     Timer32_setCount(TIMER32_0_BASE,20000);
     

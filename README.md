@@ -1,9 +1,8 @@
 # 326HSP
 
-Stuff were behind on:
+Stuff we're behind on:
 
 Main.c
-  Need to test and debug screen PWM and Timer32 management
 
 
 ----------------------------------------------------
@@ -12,6 +11,7 @@ Schedule:
 
 Week of 10/16/17
 Integration of the keypad, LCD, RGB LED and Photoresistor with MCU
+FIXME: LED for alarm. Actually need to add alarm state
 
 Week of 10/23/17
 Integration of stepper motor, buzzer and RTC to the MCU system

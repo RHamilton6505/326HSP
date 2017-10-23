@@ -31,6 +31,9 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * --/COPYRIGHT--*/
 
+#define TIMER32_1                        (TIMER32_BASE)
+#define TIMER32_2                        (TIMER32_BASE + 0x00020)
+
 /* DriverLib Includes */
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>
 
@@ -41,19 +44,20 @@
 
 /* Statics */
 static volatile uint16_t curADCResult;
-static volatile float normalizedADCRes;
+static volatile float normalizedADCRes = 3;
 int flag = 1;
+
 
 int main(void)
 {
     MAP_WDT_A_holdTimer();
     sysTimerInit();
     ADCInit();
+    T32Init();
 
-    Timer32_initModule (TIMER32_0_BASE,TIMER32_PRESCALER_256,TIMER32_16BIT,TIMER32_PERIODIC_MODE);
-    Timer32_setCount    (TIMER32_0_BASE, 20000);
-    Timer32_enableInterrupt(TIMER32_0_BASE);
-    Timer32_startTimer (TIMER32_0_BASE,1);
+
+    while(1){
+    }
     
 }
 
@@ -61,7 +65,6 @@ void ADC14_IRQHandler(void)
 {
     uint64_t status = MAP_ADC14_getEnabledInterruptStatus();
     MAP_ADC14_clearInterruptFlag(status);
-    
     if (ADC_INT0 & status)
     {
         curADCResult = MAP_ADC14_getResult(ADC_MEM0);
@@ -70,20 +73,22 @@ void ADC14_IRQHandler(void)
     }
 }
 
-void timer32IntHandler(void){
+void T32_INT1_IRQHandler(void){
+    
+    fflush(stdout);
+    //printf("T32 works\n");
+
+    int duty = (int) ((normalizedADCRes-.80)*50);
+    LED_PWM(50);
+    MAP_ADC14_toggleConversionTrigger();
 
     Timer32_clearInterruptFlag(TIMER32_0_BASE);
     Timer32_setCount(TIMER32_0_BASE,20000);
-    
-    int duty = (int) ((normalizedADCRes-.80)*50);
-    LED_PWM(100-duty);
-    sysDelay(500);
-    MAP_ADC14_toggleConversionTrigger();
 }
 
 
 void LED_PWM(int dutyCycle){
-    // Output is on P7.6
+    // Output is on P7.7
     P7->DIR |= BIT7;
     P7->SEL0 |= BIT7;
     P7->SEL1 &= ~BIT7;
@@ -106,8 +111,6 @@ void sysDelay(uint16_t mSecs){
     SysTick -> VAL = 0;
     while((SysTick -> CTRL & 0x00010000) == 0);
 }
-
-
 
 void ADCInit(){
     curADCResult = 0;
@@ -148,4 +151,15 @@ void ADCInit(){
     MAP_Interrupt_enableInterrupt(INT_ADC14);
     MAP_Interrupt_enableMaster();
     
+}
+
+void T32Init(){
+    MAP_Timer32_initModule(TIMER32_BASE, TIMER32_PRESCALER_256, TIMER32_32BIT,
+            TIMER32_PERIODIC_MODE);
+    MAP_Interrupt_enableInterrupt(INT_T32_INT1);
+    MAP_Interrupt_enableMaster();
+    MAP_Timer32_setCount(TIMER32_BASE,20000);
+    MAP_Timer32_enableInterrupt(TIMER32_BASE);
+    MAP_Timer32_startTimer(TIMER32_BASE, true);
+
 }

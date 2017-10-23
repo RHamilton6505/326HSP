@@ -71,21 +71,15 @@ void ADC14_IRQHandler(void)
     }
 }
 
-void TA0_N_Handler(void){
-    
-}
 
-void timer32IntHandler(void)
-{
+void timer32IntHandler(void){
     Timer32_clearInterruptFlag(TIMER32_0_BASE);
     Timer32_setCount(TIMER32_0_BASE,20000);
     
-    printf("%f \n", normalizedADCRes);
     int duty = (int) ((normalizedADCRes-.80)*50);
     LED_PWM(100-duty);
     sysDelay(500);
     MAP_ADC14_toggleConversionTrigger();
-    
 }
 
 

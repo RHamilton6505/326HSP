@@ -15,6 +15,7 @@ FIXME: LED for alarm. Actually need to add alarm state
 
 Week of 10/23/17
 Integration of stepper motor, buzzer and RTC to the MCU system
+FIXME: Buzzer is fine, need to finalize alarm states though
 
 Week of 10/30/17
 Integration of relay board, water control solenoid and door bell solenoid to MCU system

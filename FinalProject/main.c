@@ -32,7 +32,7 @@
  * --/COPYRIGHT--*/
 
 #define TIMER32_1                        (TIMER32_BASE)
-#define TIMER32_2                        (TIMER32_BASE + 0x00020)
+
 
 /* DriverLib Includes */
 #include <ti/devices/msp432p4xx/driverlib/driverlib.h>

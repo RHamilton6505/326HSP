@@ -9,6 +9,7 @@ GEN_CMDS__FLAG :=
 
 ORDERED_OBJS += \
 "./ST7735.obj" \
+"./Splash.obj" \
 "./main.obj" \
 "./system_msp432p401r.obj" \
 "./ccs/startup_msp432p401r_ccs.obj" \
@@ -160,8 +161,8 @@ FinalProject.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "ST7735.obj" "main.obj" "system_msp432p401r.obj" "ccs/startup_msp432p401r_ccs.obj" 
-	-$(RM) "ST7735.d" "main.d" "system_msp432p401r.d" "ccs/startup_msp432p401r_ccs.d" 
+	-$(RM) "ST7735.obj" "Splash.obj" "main.obj" "system_msp432p401r.obj" "ccs/startup_msp432p401r_ccs.obj" 
+	-$(RM) "ST7735.d" "Splash.d" "main.d" "system_msp432p401r.d" "ccs/startup_msp432p401r_ccs.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

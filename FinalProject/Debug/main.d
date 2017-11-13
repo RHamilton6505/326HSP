@@ -44,6 +44,8 @@ main.obj: /Applications/ti/simplelink_msp432p4_sdk_1_50_00_12/source/ti/devices/
 main.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.3.LTS/include/stdio.h
 main.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.3.LTS/include/linkage.h
 main.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.3.LTS/include/stdarg.h
+main.obj: /Users/ianhamilton/ResourceLibrary/326/Final\ Project/326HSP/FinalProject/Splash.h
+main.obj: /Users/ianhamilton/ResourceLibrary/326/Final\ Project/326HSP/FinalProject/ST7735.h
 
 ../main.c: 
 /Applications/ti/simplelink_msp432p4_sdk_1_50_00_12/source/ti/devices/msp432p4xx/driverlib/driverlib.h: 
@@ -89,3 +91,5 @@ main.obj: /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.3.LTS/include/st
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.3.LTS/include/stdio.h: 
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.3.LTS/include/linkage.h: 
 /Applications/ti/ccsv7/tools/compiler/ti-cgt-arm_16.9.3.LTS/include/stdarg.h: 
+/Users/ianhamilton/ResourceLibrary/326/Final\ Project/326HSP/FinalProject/Splash.h: 
+/Users/ianhamilton/ResourceLibrary/326/Final\ Project/326HSP/FinalProject/ST7735.h: 

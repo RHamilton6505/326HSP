@@ -1358,8 +1358,9 @@ const unsigned short RedLock[] = {
 
 int splash(void)
 {
+  screenPWM(1);
   ST7735_DrawBitmap(0, 160, GVAnchor, 128, 160);
-  sysDelaySec(DISPLAY_TIME);
+  song();
 }
 
 int unlock(void)

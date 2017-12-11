@@ -1,3 +1,126 @@
+Final Project
+DETAILS
+ACTIVITY
+Today
+7:34 PM
+R
+You edited an item
+Google Docs
+Design Document.docx
+7:33 PM
+D
+Danny Bagby renamed an item
+C
+final_main.c
+main.c
+7:33 PM
+D
+Danny Bagby removed an item from
+Google Drive Folder
+Final Project
+C
+main.c
+7:32 PM
+D
+Danny Bagby added an item to
+Google Drive Folder
+Final Project
+C
+main.c
+7:31 PM
+R
+You edited an item
+Google Docs
+Design Document.docx
+7:25 PM
+D
+Danny Bagby edited an item
+Google Sheets
+DesignDocumentRubric.xlsx
+7:25 PM
+D
+Danny Bagby added an item to
+Google Drive Folder
+Final Project
+Google Sheets
+DesignDocumentRubric.xlsx
+7:21 PM
+R
+You edited an item
+Google Docs
+Design Document.docx
+7:04 PM
+R
+You edited an item
+Google Docs
+Design Document.docx
+6:34 PM
+R
+You edited an item
+Google Docs
+Design Document.docx
+Yesterday
+Sat 2:58 PM
+D
+Danny Bagby uploaded an item
+Excel
+DesignDocumentRubric.xlsx
+Last week
+Thu 5:21 PM
+R
+You edited an item
+Google Docs
+Design Document.docx
+Thu 4:19 PM
+R
+You edited an item
+Google Sheets
+PinOut Diagram
+Tue 6:53 PM
+R
+You edited an item
+Google Sheets
+PinOut Diagram
+Tue 5:22 PM
+R
+You uploaded an item
+C
+startup_msp432p401r_ccs.c
+Tue 5:22 PM
+R
+You uploaded 3 items
+Unknown File
+system_msp432p401r.obj
+Binary File
+subdir_vars.mk
+Text
+system_msp432p401r.d
+Tue 5:22 PM
+R
+You uploaded an item
+Text
+startup_msp432p401r_ccs.d
+Tue 5:22 PM
+R
+You uploaded an item
+Binary File
+org.eclipse.core.resources.prefs
+Tue 5:22 PM
+R
+You uploaded an item
+XML
+FinalProject.launch
+Tue 5:22 PM
+R
+You uploaded 3 items
+Binary File
+subdir_vars.mk
+Binary File
+subdir_rules.mk
+Unknown File
+startup_msp432p401r_ccs.obj
+You are using an unsupported browser. If you see some unexpected behavior, you may want to use a supported browser instead. LEARN MORE
+
 
 
 /*
@@ -117,29 +240,23 @@ int doorManager(void);
 float readRTCTemp(void);
 void alarmHist(void);
 void armHist(void);
-
-int armStat = 0, selection;
-
-uint8_t* addr_pointer; // pointer to address in flash for reading back values
-uint8_t read_back_data[8];
-//Flash Memory:
+void timePrint(uint8_t* reg);
 void ReadFlash();
 void WriteFlash();
 void Shift(uint8_t offset);
 void DateTimeLog(void);
+void rest(void);
 
+int armStat = 0, selection;
 
-uint8_t LogReadingOne[7]; // array to hold data
-uint8_t LogReadingTwo[7]; // array to hold data
-uint8_t LogReadingThree[7]; // array to hold data
-uint8_t LogReadingFour[7]; // array to hold data
-uint8_t LogReadingFive[7]; // array to hold data
+uint8_t* addr_pointer; // pointer to address in flash for reading back values
+
 
 uint8_t code;
-int key[4] = {0},passcode[4] = {1,1,1,1}, noCode=1, successFlag = 1;
+int key[4] = {0},passcode[4]={1,1,1,1}, noCode=1, successFlag = 1;
 int keyVal, selected = 0;
 int scrColor=0, button_value=0, passcodeEntry=0, alarmStatus, detected=0;
-uint8_t bcdSecond = 0, bcdMinute = 0, bcdHour = 0, bcdDay = 0, bcdDate = 0, bcdMonth = 0, bcdYear = 0, P4IntFlag=0, PoundFlag=0, RTC_registers[7], FLASH_registers[74]={0}, OUT_registers[7];
+uint8_t bcdSecond = 0, bcdMinute = 0, bcdHour = 0, bcdDay = 0, bcdDate = 0, bcdMonth = 0, bcdYear = 0, P4IntFlag=0, PoundFlag=0, RTC_registers[7], FLASH_registers[110]={0}, OUT_registers[7];
 int armCode = 0, alarmFlag = 0, disarmFlag = 0;
 int timeFlag = 0;
 int lockState=0;
@@ -159,7 +276,7 @@ const eUSCI_I2C_MasterConfig i2cConfig =
 static volatile uint16_t curADCResult;
 static volatile float normalizedADCRes = 0;
 int ADCFlag = 1;
-int alarmState;
+int alarmState[1]={0};
 int buzzCount = 0;
 int RTCFlag = 0;
 
@@ -204,46 +321,35 @@ int main(void)
     __disable_irq();
     P2->OUT &= ~0xFF;
     P2OUT |= (BIT0 | BIT1 | BIT2);
+
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0 + GPIO_PIN1 + GPIO_PIN2 + GPIO_PIN3);
     MAP_GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P3, GPIO_PIN0);
-        MAP_GPIO_setAsOutputPin(GPIO_PORT_P2, GPIO_PIN0 + GPIO_PIN1 + GPIO_PIN2);
-        MAP_GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P4, GPIO_PIN0 + GPIO_PIN1 + GPIO_PIN2 + GPIO_PIN3);
-        MAP_GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P5, GPIO_PIN0 + GPIO_PIN1);
-        /* Configuring GPIOs (5.5 A0) */
-        MAP_GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P5, GPIO_PIN5,
+
+    MAP_GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P4, GPIO_PIN0 + GPIO_PIN1 + GPIO_PIN2 + GPIO_PIN3);
+    MAP_GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P5, GPIO_PIN0 + GPIO_PIN1);
+    /* Configuring GPIOs (5.5 A0) */
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P5, GPIO_PIN4);
+    MAP_GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P5, GPIO_PIN5,
                                                            GPIO_TERTIARY_MODULE_FUNCTION);
-        MAP_GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P6, GPIO_PIN4 + GPIO_PIN5, GPIO_PRIMARY_MODULE_FUNCTION);
-        MAP_GPIO_setAsOutputPin(GPIO_PORT_P10, GPIO_PIN0 + GPIO_PIN1 + GPIO_PIN2 + GPIO_PIN3);
+    MAP_GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P6, GPIO_PIN4 + GPIO_PIN5, GPIO_PRIMARY_MODULE_FUNCTION);
+    MAP_GPIO_setAsInputPinWithPullDownResistor(GPIO_PORT_P6, GPIO_PIN7);
+    MAP_GPIO_setAsOutputPin(GPIO_PORT_P10, GPIO_PIN0 + GPIO_PIN1 + GPIO_PIN2 + GPIO_PIN3);
         P10->OUT=0;
     Clock_Init48MHz();
     ST7735_InitR(INITR_REDTAB);
     sysTimerInit();
     setUpI2C();
-    //splash();
+    splash();
     ADCInit();
-    mainInit();
-    T32Init();
 
+    T32Init();
     //watchDogSetup();
 
-
     __enable_irq();
-    alarmState = 0;
-
-
-
-
-
-/*********************************************************
-     *
-     *
-     * This has to come out!!!!!!! Stop Watchdog
-     *
-     *
-**********************************************************/
-
-
 
 /*********************************************************/
+    mainInit();
+
     while(1)
     {
         mainScreen(armStat);
@@ -280,7 +386,15 @@ void mainInit(){
     //BUZZER 2.7
 
     //SCREEN 7.7
+    P5->OUT|=0x04;
+    ReadFlash();
 
+    int i;
+
+    if(FLASH_registers[109]==1)
+    {
+        armed();
+    }
 
 }
 
@@ -307,38 +421,32 @@ void T32_INT1_IRQHandler(void){
 
     P2OUT |= (BIT0 | BIT1 | BIT2);
 
-    int dutyBuzz = 0;
 
-    MAP_ADC14_toggleConversionTrigger();
-
-    // R Vcc G B
-
-    if(alarmState == 0){
+    if(alarmState[0] == 0){
         P2OUT &= ~BIT1;
     }
 
-    if(alarmState == 1){
-
-        if(buzzCount){
-           P2OUT |= BIT0;
-        }
-        else{
-            P2OUT &= ~BIT0;
-        }
-
-        buzzCount = !buzzCount;
-
-    }
-
-    if(alarmState == 2){
+    if(alarmState[0] == 1){
 
         P2OUT &= ~BIT0;
 
     }
 
+    if(alarmState[0] == 2){
+
+
+        if(buzzCount){
+                   P2OUT |= BIT0;
+                }
+                else{
+                    P2OUT &= ~BIT0;
+                }
+
+                buzzCount = !buzzCount;
+    }
+
     if(ADCFlag){
         ADCFlag = 0;
-        int duty  = 10;
         MAP_ADC14_toggleConversionTrigger();
     }
 
@@ -352,7 +460,9 @@ void T32_INT1_IRQHandler(void){
         inputCount++;
     }
 
-    MAP_WDT_A_clearTimer();
+
+
+
     Timer32_setCount(TIMER32_BASE,187500);
 }
 
@@ -364,31 +474,36 @@ void updateT(void)
         if(PWMF>2000){
             PWMF = 1999;
         }
+
         getTime();
         timeFlag = 0;
         screenPWM(2000-PWMF);
+        displayStats();
+        /*if(P6->IN&0x80)
+        {
+            if(alarmState[0]!=2)
+            armed();
+        }*/
     }
 
 }
 
+void displayStats(void)
+{
+    if(P3->IN&0x01) PIRDetect();
+    else PIRnoDetect();
+    if(P5->IN&0x01) openWindow();
+    else closeWindow();
+    if(P5->IN&0x02) openDoor();
+    else closeDoor();
 
-
+}
 
 void ADCInit(){
 
     MAP_Interrupt_disableInterrupt(INT_ADC14);
 
     curADCResult = 0;
-
-    /*Setting Flash wait state
-    MAP_FlashCtl_setWaitState(FLASH_BANK0, 0);
-
-
-    /*Enabling the FPU for floating point operation
-    MAP_FPU_enableModule();
-    MAP_FPU_enableLazyStacking();
-
-
 
     //![Single Sample Mode Configure]
     /* Initializing ADC (HSMCLK/1/4) */
@@ -560,10 +675,10 @@ void getPasscode(int key[]){
       if(timeFlag){
           int buzzState = aCount%2;
 
-          if(buzzState==1 && alarmState == 2){
+          if(buzzState==1 && alarmState[0] == 2){
               buzzerPWM(1911);
           }
-          if(buzzState==0 && alarmState == 2){
+          if(buzzState==0 && alarmState[0] == 2){
               buzzerPWM(Cs5);
           }
           timeFlag = 0;
@@ -604,15 +719,6 @@ int enterPasscode(void){
 
     while(1)
     {
-        ST7735_DrawCharS(35, 49, 'E', WHITE, 0, 2);
-        ST7735_DrawCharS(47, 49, 'n', WHITE, 0, 2);
-        ST7735_DrawCharS(59, 49, 't', WHITE, 0, 2);
-        ST7735_DrawCharS(71, 49, 'e', WHITE, 0, 2);
-        ST7735_DrawCharS(83, 49, 'r', WHITE, 0, 2);
-        ST7735_DrawCharS(41, 65, 'C', WHITE, 0, 2);
-        ST7735_DrawCharS(53, 65, 'o', WHITE, 0, 2);
-        ST7735_DrawCharS(65, 65, 'd', WHITE, 0, 2);
-        ST7735_DrawCharS(77, 65, 'e', WHITE, 0, 2);
         ST7735_SetCursor(0,0);
         getPasscode(key);
 
@@ -653,9 +759,6 @@ int menuDisplay(void)
     char *s5 ="5 Alarm History";
     char *s6 ="6 Arm/ Disarm History";
     ST7735_FillRect(27,40,74,80,BLACK);
-    //unlockScreen();
-    //PIRDetect();
-
     ST7735_DrawString(0, 4, s, WHITE);
     ST7735_DrawString(0, 5, s2, WHITE);
     ST7735_DrawString(0, 6, s3, WHITE);
@@ -688,9 +791,6 @@ void mainScreen(int status)
 {
     Output_Clear();
     ST7735_FillScreen(0);
-
-    //unlockScreen();
-    //PIRDetect();
     ST7735_FillRect(27,40,74,80,GREEN);
     ST7735_DrawCharS(35, 49, 'A', BLACK, GREEN, 2);
     ST7735_DrawCharS(47, 49, 'l', BLACK, GREEN, 2);
@@ -715,9 +815,6 @@ void mainScreen(int status)
     ST7735_DrawCharS(74, 93, 'e', BLACK, GREEN, 1);
     ST7735_DrawCharS(80, 93, 'y', BLACK, GREEN, 1);
 
-    /*ST7735_SetCursor(0,3);
-    char *s ="Press any key";
-    ST7735_DrawString(0, 1, s, WHITE);*/
     while(!button_value)
     {
         updateT();
@@ -774,6 +871,27 @@ void getTime()
 {
     RTCMultibyteRead();
     float degrees = readRTCTemp();
+    if(degrees>=110)
+        {
+            P5->OUT&=!0x04;
+            fireAlarm();
+            if(buzzCount)
+            {
+                 P2OUT |= BIT0;
+            }
+            else
+            {
+                 P2OUT &= ~BIT0;
+            }
+            buzzCount = !buzzCount;
+            while(!button_value)
+            {
+            button_value=keypad_getkey();
+            }
+            P5->OUT|=0x04;
+            button_value=0;
+        }
+
     ST7735_SetCursor(0,0);
     ST7735_SetTextColor(WHITE);
     bcdToDecTime(RTC_registers);
@@ -917,20 +1035,32 @@ void bcdToDecTime(uint8_t* timeReg)
 
 void armSystem()
 {
+    Output_Clear();
+    ST7735_DrawCharS(35, 49, 'E', WHITE, 0, 2);
+    ST7735_DrawCharS(47, 49, 'n', WHITE, 0, 2);
+    ST7735_DrawCharS(59, 49, 't', WHITE, 0, 2);
+    ST7735_DrawCharS(71, 49, 'e', WHITE, 0, 2);
+    ST7735_DrawCharS(83, 49, 'r', WHITE, 0, 2);
+    ST7735_DrawCharS(41, 65, 'C', WHITE, 0, 2);
+    ST7735_DrawCharS(53, 65, 'o', WHITE, 0, 2);
+    ST7735_DrawCharS(65, 65, 'd', WHITE, 0, 2);
+    ST7735_DrawCharS(77, 65, 'e', WHITE, 0, 2);
     while(!armCode)
         {
         armCode=enterPasscode();
         }
     clearKey();
-    alarmState = 1;
+    alarmState[0] = 1;
     armCode=0;
     //Shift(4);
-    //WriteFlash();
+    WriteFlash();
     armed();
 }
 
 void armed(void)
     {
+
+    int alarmTrip = 0;
         Output_Clear();
 
             ST7735_FillScreen(RED);
@@ -946,10 +1076,15 @@ void armed(void)
             ST7735_DrawCharS(59, 65, 'm', BLACK, RED, 2);
             ST7735_DrawCharS(71, 65, 'e', BLACK, RED, 2);
             ST7735_DrawCharS(83, 65, 'd', BLACK, RED, 2);
-            while(P3->IN&0x01 && P5->IN&0x01 && P5->IN&0x02);
+            //sysDelaySec(15);
+            while(!alarmTrip)
+                {
+                    updateT();
+                    if(P3->IN&0x01||P5->IN&0x01||P5->IN&0x02)
+                        alarmTrip=1;
+                }
             updateT();
-            //Shift(39);
-            //WriteFlash();
+            WriteFlash();
             alarm();
 
     }
@@ -957,7 +1092,7 @@ void armed(void)
 void alarm(void)
 {
     int disarmFlag = 0;
-    alarmState = 2;
+    alarmState[0] = 2;
 
     Output_Clear();
     ST7735_FillScreen(0);
@@ -979,21 +1114,23 @@ void alarm(void)
     ST7735_DrawCharS(77, 65, 'e', YELLOW, RED, 2);
     while(!disarmFlag)
     {
+        P2->OUT|=0x04;
         updateT();
         disarmFlag=enterPasscode();
     }
     buzzerPWM(0);
+    P2->OUT^=0x04;
     clearKey();
-    //Shift(4);
-    //WriteFlash();
+
+    WriteFlash();
     disarmFlag = 0;
-    alarmState = 2;
+    alarmState[0] = 0;
 }
 
 void lockDoor()
 {
     int i,j, speed = 3;
-for(i=0;i<64;i++)
+for(i=0;i<32;i++)
             {
                 for(j=0;j<4;j++)
                 {
@@ -1013,7 +1150,7 @@ P10->OUT=0;
 void unlockDoor()
 {
    int i,j, speed = 3;
-    for(i=0;i<64;i++)
+    for(i=0;i<32;i++)
             {
                 for(j=0;j<4;j++)
                 {
@@ -1050,7 +1187,7 @@ void ReadFlash(void)
     addr_pointer = CALIBRATION_START+4; // point to address in flash for saving data
    //Logged time/date one
     int i;
-    for(i=0;i<7;i++)
+    for(i=0;i<110;i++)
     {
         FLASH_registers[i] = *addr_pointer++;
     }
@@ -1061,24 +1198,9 @@ void ReadFlash(void)
 *************************************************************************/
 void WriteFlash(void)
 {
-    int i, buttonFlag = 0;
-    addr_pointer = CALIBRATION_START+4; // point to address in flash for saving data
+    //addr_pointer = CALIBRATION_START+4; // point to address in flash for saving data
     RTCMultibyteRead();
     ReadFlash();
-
-    /*for(i=0;i<4;i++)
-    {
-        FLASH_registers[74+i]=passcode[i];
-    }
-    for(i=73;i>11;i--)
-    {
-        FLASH_registers[i]=FLASH_registers[i-7];
-    }
-
-    for(i=0;i<7;i++)
-    {
-        FLASH_registers[i+4]=RTC_registers[i];
-    }*/
     /* Unprotecting Info Bank 0, Sector 0*/
     FlashCtl_setWaitState(FLASH_BANK0, 2);
     MAP_FlashCtl_unprotectSector(FLASH_INFO_MEMORY_SPACE_BANK0,FLASH_SECTOR0);
@@ -1087,8 +1209,16 @@ void WriteFlash(void)
     while (!MAP_FlashCtl_programMemory(RTC_registers,
     (void*) CALIBRATION_START+4, 7 )); // leave first 4 bytes unprogrammed
     /* Setting the sector back to protected */
+    while (!MAP_FlashCtl_programMemory(FLASH_registers,
+    (void*) CALIBRATION_START+11, 98 ));
+    while (!MAP_FlashCtl_programMemory(passcode,
+    (void*) CALIBRATION_START+109, 4 ));
+    while (!MAP_FlashCtl_programMemory(alarmState,
+    (void*) CALIBRATION_START+113, 1 ));
     MAP_FlashCtl_protectSector(FLASH_INFO_MEMORY_SPACE_BANK0,FLASH_SECTOR0);
 }
+
+
 
 /**************************************************************************
  * Read RTC Temperature Register
@@ -1127,25 +1257,35 @@ float readRTCTemp(void)
 
 void armHist(void)
 {
-    //uint8_t reg[5]={LogReadingOne, LogReadingTwo, LogReadingThree, LogReadingFour, LogReadingFive};
     int i, j, buttonFlag=0;
     ReadFlash();
     ST7735_FillScreen(0);
-    char *s ="Arm/ Disarm";
+    char *s1 ="Arm";
+    char *s2 = "Disarm";
     char *t ="History";
-    ST7735_DrawString(0,0,s,WHITE);
-    ST7735_DrawString(0,1,t,WHITE);
-    ST7735_SetCursor(0,2);
-    /*for(i=0;i<5;i++)
+    updateT();
+    ST7735_DrawString(0,1,s1,WHITE);
+    ST7735_DrawString(0,2,t,WHITE);
+    ST7735_SetCursor(0,3);
+    for(i=0;i<5;i++)
     {
         for(j=0;j<7;j++)
         {
-            OUT_registers[j]=FLASH_registers[i*7+j];
+            OUT_registers[j]=FLASH_registers[i*21+14+j];
         }
-
-
-    }*/
-    timePrint(FLASH_registers);
+        timePrint(OUT_registers);
+    }
+    ST7735_DrawString(0,8,s2,WHITE);
+    ST7735_DrawString(0,9,t,WHITE);
+    ST7735_SetCursor(0,10);
+    for(i=0;i<5;i++)
+    {
+        for(j=0;j<7;j++)
+            {
+                OUT_registers[j]=FLASH_registers[i*21+j];
+            }
+        timePrint(OUT_registers);
+        }
     while(!buttonFlag)
     {
         buttonFlag=keypad_getkey();
@@ -1155,25 +1295,24 @@ void armHist(void)
 
 void alarmHist(void)
 {
-    //uint8_t reg[5]={LogReadingOne, LogReadingTwo, LogReadingThree, LogReadingFour, LogReadingFive};
     int i, j, buttonFlag=0;
     ReadFlash();
     ST7735_FillScreen(0);
     char *s ="Alarm";
     char *t ="History";
-    ST7735_DrawString(0,0,s,WHITE);
-        ST7735_DrawString(0,1,t,WHITE);
-        ST7735_SetCursor(0,2);
-        /*for(i=5;i<10;i++)
+    updateT();
+    ST7735_DrawString(0,1,s,WHITE);
+        ST7735_DrawString(0,2,t,WHITE);
+        ST7735_SetCursor(0,3);
+        for(i=0;i<5;i++)
         {
             for(j=0;j<7;j++)
             {
-                OUT_registers[j]=FLASH_registers[i*7+j];
+                OUT_registers[j]=FLASH_registers[i*21+7+j];
             }
+            timePrint(OUT_registers);
+        }
 
-
-        }*/
-        timePrint(FLASH_registers);
                    while(!buttonFlag)
                 {
                      buttonFlag=keypad_getkey();
@@ -1181,10 +1320,10 @@ void alarmHist(void)
             buttonFlag=0;
     }
 
-void timePrint(uint8_t reg)
+void timePrint(uint8_t* reg)
 {
     ST7735_SetTextColor(WHITE);
-    bcdToDecTime(FLASH_registers);
+    bcdToDecTime(reg);
     ST7735_OutUDec(bcdHour);
     printf(":");
     if(bcdMinute<10)
@@ -1219,6 +1358,7 @@ void song(void)
     playNote(As4 , EIGHTH);
     playNote(C4 , EIGHTH);
     playNote(D5 , EIGHTH);
+
 
     playNote(A4 , EIGHTH);
     playNote(B4 , EIGHTH);
@@ -1336,4 +1476,3 @@ void watchDogSetup(){
 
         MAP_WDT_A_startTimer();
 }
-
